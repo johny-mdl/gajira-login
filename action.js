@@ -20,8 +20,6 @@ module.exports = class {
     await this.login()
     const issueId = await this.findIssue()
 
-    console.log(`POW ${issueId}`)
-
     if (!issueId) return
 
     return this.transition(issueId)
