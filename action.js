@@ -14,7 +14,7 @@ const transitionsStates = [
   },
   {
     action: 'closed',
-    transition: 'done',
+    transition: 'Resolve',
   }]
 
 module.exports = class {
