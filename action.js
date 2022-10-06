@@ -30,7 +30,7 @@ module.exports = class {
   }
 
   async findIssue () {
-    console.log(`Github ${JSON.stringify(this.githubEvent)}`)
+    console.log(`Github ${JSON.stringify(process.env)}`)
     const searchStr = this.preprocessString('{{event.ref}}')
     const foundIssue = await this.findIssueKeyIn(searchStr)
 
