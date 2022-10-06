@@ -1,11 +1,4 @@
-const fs = require('fs')
-const path = require('path')
-const YAML = require('yaml')
 const core = require('@actions/core')
-
-const cliConfigPath = `${process.env.HOME}/.jira.d/config.yml`
-const cliCredentialsPath = `${process.env.HOME}/.jira.d/credentials`
-const configPath = `${process.env.HOME}/jira/config.yml`
 
 const Action = require('./action')
 
