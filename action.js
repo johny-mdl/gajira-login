@@ -21,14 +21,14 @@ module.exports = class {
 
     console.log(`Logged in as: ${myself.name}`)
 
-    const issueId = await this.findIssueKeyIn('LPMSNEXT-359')
+    const foundIssue = await this.findIssueKeyIn('LPMSNEXT-359')
 
-    if (!issueId) return
+    if (!foundIssue) return
 
-    console.log(`Issue is: \n ${issueId}`)
+    console.log(`Detected issueKey: ${foundIssue.issue}`)
 
     const { argv } = this
-    const { transitions } = await this.Jira.getIssueTransitions(issueId)
+    const { transitions } = await this.Jira.getIssueTransitions(foundIssue.issue)
 
     const transitionToApply = _.find(transitions, (t) => {
       if (t.id === argv.transitionId) return true
