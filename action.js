@@ -56,6 +56,7 @@ module.exports = class {
     }
 
     for (const issueKey of match) {
+      console.log(`Found key is: \n ${issueKey}`)
       const issue = await this.Jira.getIssue(issueKey)
 
       if (issue) {
