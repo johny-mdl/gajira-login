@@ -1,48 +1,31 @@
-# Jira Login
-Used to store credentials for later use by other Jira Actions
-
-For examples on how to use this, check out the [gajira-demo](https://github.com/atlassian/gajira-demo) repository
-> ##### Only supports Jira Cloud. Does not support Jira Server (hosted)
-
-This is required by other actions like:
-- [`Transition`](https://github.com/marketplace/actions/jira-transition) - Transition a Jira issue
-- [`Comment`](https://github.com/marketplace/actions/jira-comment) - Add a comment to a Jira issue
-- [`Create`](https://github.com/marketplace/actions/jira-create) - Create a new Jira issue
-- [`Find issue key`](https://github.com/marketplace/actions/jira-find) - Search for an issue key in commit message, branch name, etc. This issue key is then saved and used by the next actions in the same workflow
-- [`TODO`](https://github.com/marketplace/actions/jira-todo) - Create a Jira issue for each TODO comment in committed code
-- [`CLI`](https://github.com/marketplace/actions/jira-cli) - Wrapped [go-jira](https://github.com/Netflix-Skunkworks/go-jira) CLI for common Jira actions
+# Jira Transition
 
 ## Usage
-An example workflow to create a Jira issue for each `//TODO` in code:
+An example workflow to transition a Jira issue:
 
 ```yaml
-on: push
+on:
+  pull_request:
+    types: [opened, reopened]
 
-name: Jira Example
+permissions:
+  pull-requests: read
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Jira Example
+  transition-jira-ticket:
+    runs-on: [ self-hosted, linux ]
     steps:
-    - name: Login
-      uses: atlassian/gajira-login@master
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-
-    - name: Jira TODO
-      uses: atlassian/gajira-todo@master
-      with:
-        project: GA
-        issuetype: Task
-        description: Created automatically via GitHub Actions
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Transition Jira Ticket
+        uses: johny-mdl/gajira-login@integrateAllActions
+        env:
+            JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+            JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+            JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        with:
+          transition: "In review"
 ```
 
-More examples at [gajira-demo](https://github.com/atlassian/gajira-demo) repository
 
 ----
 ## Action Spec:
@@ -55,17 +38,9 @@ More examples at [gajira-demo](https://github.com/atlassian/gajira-demo) reposit
 ### Arguments
 - None
 
-### Writes fields to config file at $HOME/jira/config.yml
-- `email` - user email
-- `token` - api token
-- `baseUrl` - URL for Jira instance
-
-### Writes fields to CLI config file at $HOME/.jira.d/config.yml
-- `endpoint` - URL for Jira instance
-- `login` - user email
-
-### Writes env to file at $HOME/.jira.d/credentials
-- `JIRA_API_TOKEN` - Jira API token to use with CLI
+### Inputs
+- `transition` - Case insensetive name of transition to apply. Example: `Cancel` or `Accept`
+- `transitionId` - transition id to apply to an issue
 
 
 ## Build project

@@ -17,18 +17,31 @@ module.exports = class {
   }
 
   async execute () {
+    await this.login()
+    const issueId = await this.findIssue()
+
+    return this.transition(issueId)
+  }
+
+  async login () {
     const myself = await this.Jira.getMyself()
 
     console.log(`Logged in as: ${myself.name}`)
+  }
 
-    const foundIssue = await this.findIssueKeyIn('LPMSNEXT-359')
+  async findIssue () {
+    const searchStr = this.preprocessString('{{event.ref}}')
+    const foundIssue = await this.findIssueKeyIn(searchStr)
 
     if (!foundIssue) return
 
     console.log(`Detected issueKey: ${foundIssue.issue}`)
 
+    return foundIssue.issue
+  }
+
+  async transition (issueId) {
     const { argv } = this
-    const issueId = foundIssue.issue
     const { transitions } = await this.Jira.getIssueTransitions(issueId)
 
     const transitionToApply = _.find(transitions, (t) => {
@@ -81,5 +94,12 @@ module.exports = class {
         return { issue: issue.key }
       }
     }
+  }
+
+  preprocessString (str) {
+    _.templateSettings.interpolate = /{{([\s\S]+?)}}/g
+    const tmpl = _.template(str)
+
+    return tmpl({ event: this.githubEvent })
   }
 }
