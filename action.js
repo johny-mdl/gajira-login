@@ -20,6 +20,8 @@ module.exports = class {
     await this.login()
     const issueId = await this.findIssue()
 
+    if (!issueId) return
+
     return this.transition(issueId)
   }
 
@@ -30,9 +32,7 @@ module.exports = class {
   }
 
   async findIssue () {
-    console.log(`Github ${JSON.stringify(process.env)}`)
-    const searchStr = this.preprocessString('{{event.ref}}')
-    const foundIssue = await this.findIssueKeyIn(searchStr)
+    const foundIssue = await this.findIssueKeyIn(this.githubEvent.pull_request.head.ref)
 
     if (!foundIssue) return
 
@@ -95,12 +95,5 @@ module.exports = class {
         return { issue: issue.key }
       }
     }
-  }
-
-  preprocessString (str) {
-    _.templateSettings.interpolate = /{{([\s\S]+?)}}/g
-    const tmpl = _.template(str)
-
-    return tmpl({ event: this.githubEvent })
   }
 }
