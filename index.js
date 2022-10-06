@@ -34,10 +34,10 @@ function parseArgs () {
   const transition = core.getInput('transition')
   const transitionId = core.getInput('transitionId')
 
-  if (!transition && !transitionId) {
-    // Either transition _or_ transitionId _must_ be provided
-    throw new Error('Error: please specify either a transition or transitionId')
-  }
+  // if (!transition && !transitionId) {
+  //   // Either transition _or_ transitionId _must_ be provided
+  //   throw new Error('Error: please specify either a transition or transitionId')
+  // }
 
   return {
     transition,
