@@ -59,12 +59,11 @@ module.exports = class {
     const { argv } = this
     const { transitions } = await this.Jira.getIssueTransitions(issueId)
 
-    const smartTransition = this.smartTransition()
+    const transitionName = argv.transition ? argv.transition : this.smartTransition()
 
     const transitionToApply = _.find(transitions, (t) => {
       if (t.id === argv.transitionId) return true
-      if (t.name.toLowerCase() === argv.transition.toLowerCase()) return true
-      if (t.name.toLowerCase() === smartTransition) return true
+      if (t.name.toLowerCase() === transitionName.toLowerCase()) return true
     })
 
     if (!transitionToApply) {
