@@ -11,10 +11,6 @@ const transitionsStates = [
   {
     action: 'opened',
     transition: 'in review',
-  },
-  {
-    action: 'closed',
-    transition: 'Resolve',
   }]
 
 module.exports = class {
