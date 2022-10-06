@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const YAML = require('yaml')
+const core = require('@actions/core')
 
 const cliConfigPath = `${process.env.HOME}/.jira.d/config.yml`
 const cliCredentialsPath = `${process.env.HOME}/.jira.d/credentials`
@@ -25,38 +26,34 @@ async function exec () {
 
     const result = await new Action({
       githubEvent,
-      argv: {},
+      argv: parseArgs(),
       config,
     }).execute()
 
     if (result) {
-      const extendedConfig = Object.assign({}, config, result)
-
-      if (!fs.existsSync(configPath)) {
-        fs.mkdirSync(path.dirname(configPath), { recursive: true })
-      }
-
-      fs.writeFileSync(configPath, YAML.stringify(extendedConfig))
-
-      if (!fs.existsSync(cliConfigPath)) {
-        fs.mkdirSync(path.dirname(cliConfigPath), { recursive: true })
-      }
-
-      fs.writeFileSync(cliConfigPath, YAML.stringify({
-        endpoint: result.baseUrl,
-        login: result.email,
-      }))
-
-      fs.writeFileSync(cliCredentialsPath, `JIRA_API_TOKEN=${result.token}`)
-
       return
     }
 
-    console.log('Failed to login.')
+    console.log('Failed to process.')
     process.exit(78)
   } catch (error) {
     console.error(error)
     process.exit(1)
+  }
+}
+
+function parseArgs () {
+  const transition = core.getInput('transition')
+  const transitionId = core.getInput('transitionId')
+
+  if (!transition && !transitionId) {
+    // Either transition _or_ transitionId _must_ be provided
+    throw new Error('Error: please specify either a transition or transitionId')
+  }
+
+  return {
+    transition,
+    transitionId,
   }
 }
 
