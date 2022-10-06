@@ -66,3 +66,9 @@ More examples at [gajira-demo](https://github.com/atlassian/gajira-demo) reposit
 
 ### Writes env to file at $HOME/.jira.d/credentials
 - `JIRA_API_TOKEN` - Jira API token to use with CLI
+
+
+## Build project
+After changing code in the project and before pushing we must build the project with the command: 
+
+```ncc build -m --license licenses.txt```
