@@ -17,19 +17,13 @@ async function exec () {
       email: process.env.JIRA_USER_EMAIL,
     }
 
-    const result = await new Action({
+    await new Action({
       githubEvent,
       argv: parseArgs(),
       config,
     }).execute()
 
-    // if (result) {
-    //   return
-    // }
-
     return
-    // console.log('Failed to process.')
-    // process.exit(78)
   } catch (error) {
     console.error(error)
     process.exit(1)

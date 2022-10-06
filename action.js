@@ -3,6 +3,20 @@ const Jira = require('./common/net/Jira')
 
 const issueIdRegEx = /([a-zA-Z0-9]+-[0-9]+)/g
 
+const transitionsStates = [
+  {
+    action: 'reopened',
+    transition: 'in review',
+  },
+  {
+    action: 'opened',
+    transition: 'in review',
+  },
+  {
+    action: 'closed',
+    transition: 'done',
+  }]
+
 module.exports = class {
   constructor ({ githubEvent, argv, config }) {
     this.Jira = new Jira({
@@ -45,9 +59,12 @@ module.exports = class {
     const { argv } = this
     const { transitions } = await this.Jira.getIssueTransitions(issueId)
 
+    const smartTransition = this.smartTransition()
+
     const transitionToApply = _.find(transitions, (t) => {
       if (t.id === argv.transitionId) return true
       if (t.name.toLowerCase() === argv.transition.toLowerCase()) return true
+      if (t.name.toLowerCase() === smartTransition) return true
     })
 
     if (!transitionToApply) {
@@ -77,13 +94,19 @@ module.exports = class {
     return {}
   }
 
+  smartTransition () {
+    const pullRequestAction = this.githubEvent.action.toLowerCase()
+
+    return transitionsStates.find(t => t.action === pullRequestAction).transition
+  }
+
   async findIssueKeyIn (searchStr) {
     const match = searchStr.match(issueIdRegEx)
 
     console.log(`Searching in string: \n ${searchStr}`)
 
     if (!match) {
-      console.log(`String does not contain issueKeys`)
+      console.log(`String does not contain issueKeys. No transition will be done!`)
 
       return
     }
